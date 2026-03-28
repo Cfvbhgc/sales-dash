@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import './App.css';
 import Sidebar from './components/Sidebar';
 import type { PageKey } from './components/Sidebar';
+import BottomNav from './components/BottomNav';
 import Header from './components/Header';
 import StatsCards from './components/StatsCards';
 import RevenueChart from './components/RevenueChart';
@@ -96,6 +97,11 @@ function App() {
         onToggle={function () {
           setSidebarCollapsed(function (prev) { return !prev; });
         }}
+        activePage={activePage}
+        onPageChange={handlePageChange}
+      />
+
+      <BottomNav
         activePage={activePage}
         onPageChange={handlePageChange}
       />

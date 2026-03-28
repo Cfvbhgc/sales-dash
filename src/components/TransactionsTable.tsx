@@ -1,114 +1,215 @@
+// Таблица транзакций с сортировкой, поиском и пагинацией
 import React, { useState, useMemo } from 'react';
-import { motion } from 'framer-motion';
 import { transactions, Transaction } from '../data/mockData';
-import { exportTransactionsCSV } from '../utils/csvExport';
 
-type SortKey = keyof Transaction;
+type SortField = keyof Transaction;
 type SortDir = 'asc' | 'desc';
 
-const TransactionsTable: React.FC = () => {
-  const [sortKey, setSortKey] = useState<SortKey>('id');
-  const [sortDir, setSortDir] = useState<SortDir>('asc');
+function TransactionsTable() {
   const [search, setSearch] = useState('');
+  const [sortField, setSortField] = useState<SortField>('date');
+  const [sortDir, setSortDir] = useState<SortDir>('desc');
+  const [page, setPage] = useState(1);
+  const perPage = 10;
 
-  const handleSort = (key: SortKey) => {
-    if (sortKey === key) {
-      setSortDir(d => d === 'asc' ? 'desc' : 'asc');
+  // Обработчик клика по заголовку для сортировки
+  function handleSort(field: SortField) {
+    if (sortField === field) {
+      setSortDir(function (prev) {
+        return prev === 'asc' ? 'desc' : 'asc';
+      });
     } else {
-      setSortKey(key);
+      setSortField(field);
       setSortDir('asc');
     }
-  };
+    setPage(1);
+  }
 
-  const filtered = useMemo(() => {
-    let data = [...transactions];
-    if (search) {
-      const q = search.toLowerCase();
-      data = data.filter(t =>
-        t.customer.toLowerCase().includes(q) ||
+  // Фильтрация по поиску
+  const filtered = useMemo(function () {
+    const q = search.toLowerCase();
+    if (!q) return transactions;
+    return transactions.filter(function (t) {
+      return (
+        t.client.toLowerCase().includes(q) ||
         t.product.toLowerCase().includes(q) ||
-        t.id.toLowerCase().includes(q)
+        t.manager.toLowerCase().includes(q) ||
+        t.status.toLowerCase().includes(q)
       );
-    }
-    data.sort((a, b) => {
-      const av = a[sortKey];
-      const bv = b[sortKey];
-      if (typeof av === 'number' && typeof bv === 'number') {
-        return sortDir === 'asc' ? av - bv : bv - av;
-      }
-      return sortDir === 'asc'
-        ? String(av).localeCompare(String(bv))
-        : String(bv).localeCompare(String(av));
     });
-    return data;
-  }, [search, sortKey, sortDir]);
+  }, [search]);
 
-  const statusClass = (s: string) => {
-    switch (s) {
-      case 'Completed': return 'status-completed';
-      case 'Pending': return 'status-pending';
-      case 'Cancelled': return 'status-cancelled';
+  // Сортировка
+  const sorted = useMemo(function () {
+    return [...filtered].sort(function (a, b) {
+      const aVal = a[sortField];
+      const bVal = b[sortField];
+
+      let cmp: number;
+      if (typeof aVal === 'number' && typeof bVal === 'number') {
+        cmp = aVal - bVal;
+      } else {
+        cmp = String(aVal).localeCompare(String(bVal), 'ru');
+      }
+
+      return sortDir === 'asc' ? cmp : -cmp;
+    });
+  }, [filtered, sortField, sortDir]);
+
+  // Пагинация
+  const totalPages = Math.ceil(sorted.length / perPage);
+  const paginated = sorted.slice((page - 1) * perPage, page * perPage);
+
+  // Стрелка сортировки
+  function sortArrow(field: SortField): string {
+    if (sortField !== field) return '';
+    return sortDir === 'asc' ? ' ▲' : ' ▼';
+  }
+
+  // Экспорт CSV
+  function handleExport() {
+    const header = 'ID,Дата,Клиент,Продукт,Сумма,Статус,Менеджер\n';
+    const rows = filtered.map(function (t) {
+      return `${t.id},${t.date},"${t.client}","${t.product}",${t.amount},"${t.status}","${t.manager}"`;
+    }).join('\n');
+
+    const blob = new Blob(['\ufeff' + header + rows], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'transactions.csv';
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+
+  // Класс статуса
+  function statusClass(status: string): string {
+    switch (status) {
+      case 'Завершён': return 'completed';
+      case 'Ожидание': return 'pending';
+      case 'Отменён': return 'cancelled';
       default: return '';
     }
-  };
+  }
 
-  const arrow = (key: SortKey) => sortKey === key ? (sortDir === 'asc' ? ' ↑' : ' ↓') : '';
+  // Генерация номеров страниц
+  function pageNumbers(): number[] {
+    const pages: number[] = [];
+    const start = Math.max(1, page - 2);
+    const end = Math.min(totalPages, page + 2);
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+    return pages;
+  }
+
+  const columns: { field: SortField; label: string }[] = [
+    { field: 'id', label: 'ID' },
+    { field: 'date', label: 'Дата' },
+    { field: 'client', label: 'Клиент' },
+    { field: 'product', label: 'Продукт' },
+    { field: 'amount', label: 'Сумма' },
+    { field: 'status', label: 'Статус' },
+    { field: 'manager', label: 'Менеджер' },
+  ];
 
   return (
-    <motion.div
-      className="transactions-container glass-card"
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.6, duration: 0.5 }}
-    >
+    <div className="glass-card">
       <div className="transactions-header">
-        <h3 className="section-title">Recent Transactions</h3>
-        <div className="transactions-actions">
+        <h3 className="chart-title" style={{ margin: 0 }}>
+          Транзакции
+        </h3>
+        <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
           <input
-            type="text"
-            className="table-search"
-            placeholder="Filter transactions..."
+            className="transactions-search"
+            placeholder="Поиск по клиенту, продукту..."
             value={search}
-            onChange={e => setSearch(e.target.value)}
+            onChange={function (e) {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
           />
-          <button className="csv-btn" onClick={() => exportTransactionsCSV(filtered)}>
-            ⤓ Export CSV
+          <button className="export-btn" onClick={handleExport}>
+            📥 Экспорт CSV
           </button>
         </div>
       </div>
+
       <div className="table-wrapper">
-        <table className="transactions-table">
+        <table className="data-table">
           <thead>
             <tr>
-              <th onClick={() => handleSort('id')}>ID{arrow('id')}</th>
-              <th onClick={() => handleSort('customer')}>Customer{arrow('customer')}</th>
-              <th onClick={() => handleSort('product')}>Product{arrow('product')}</th>
-              <th onClick={() => handleSort('amount')}>Amount{arrow('amount')}</th>
-              <th onClick={() => handleSort('status')}>Status{arrow('status')}</th>
-              <th onClick={() => handleSort('date')}>Date{arrow('date')}</th>
+              {columns.map(function (col) {
+                return (
+                  <th
+                    key={col.field}
+                    onClick={function () { handleSort(col.field); }}
+                    className={sortField === col.field ? 'sorted' : ''}
+                  >
+                    {col.label}
+                    <span className="sort-arrow">{sortArrow(col.field)}</span>
+                  </th>
+                );
+              })}
             </tr>
           </thead>
           <tbody>
-            {filtered.map((t, i) => (
-              <motion.tr
-                key={t.id}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: i * 0.03 }}
-              >
-                <td className="cell-id">{t.id}</td>
-                <td>{t.customer}</td>
-                <td>{t.product}</td>
-                <td className="cell-amount">${t.amount.toLocaleString()}</td>
-                <td><span className={`status-badge ${statusClass(t.status)}`}>{t.status}</span></td>
-                <td className="cell-date">{t.date}</td>
-              </motion.tr>
-            ))}
+            {paginated.map(function (t) {
+              return (
+                <tr key={t.id}>
+                  <td style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
+                    #{t.id}
+                  </td>
+                  <td>{t.date}</td>
+                  <td>{t.client}</td>
+                  <td>{t.product}</td>
+                  <td className="amount">₽{t.amount.toLocaleString('ru-RU')}</td>
+                  <td>
+                    <span className={`status-badge ${statusClass(t.status)}`}>
+                      {t.status}
+                    </span>
+                  </td>
+                  <td>{t.manager}</td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
-    </motion.div>
+
+      {totalPages > 1 && (
+        <div className="pagination">
+          <button
+            className="pagination-btn"
+            disabled={page === 1}
+            onClick={function () { setPage(function (p) { return p - 1; }); }}
+          >
+            Назад
+          </button>
+
+          {pageNumbers().map(function (n) {
+            return (
+              <button
+                key={n}
+                className={`pagination-btn ${n === page ? 'active' : ''}`}
+                onClick={function () { setPage(n); }}
+              >
+                {n}
+              </button>
+            );
+          })}
+
+          <button
+            className="pagination-btn"
+            disabled={page === totalPages}
+            onClick={function () { setPage(function (p) { return p + 1; }); }}
+          >
+            Вперёд
+          </button>
+        </div>
+      )}
+    </div>
   );
-};
+}
 
 export default TransactionsTable;

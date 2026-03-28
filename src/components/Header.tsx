@@ -1,27 +1,26 @@
+// Верхняя панель с поиском и профилем
 import React from 'react';
 
-const Header: React.FC = () => {
+function Header() {
   return (
     <header className="header">
       <div className="header-left">
-        <h1 className="header-title">Dashboard</h1>
-        <span className="header-subtitle">Sales overview and analytics</span>
+        <h1 className="header-title">Панель управления</h1>
+        <div className="header-search">
+          <span className="header-search-icon">🔍</span>
+          <input type="text" placeholder="Поиск..." />
+        </div>
       </div>
+
       <div className="header-right">
-        <div className="search-box">
-          <span className="search-icon">⌕</span>
-          <input type="text" placeholder="Search..." className="search-input" />
-        </div>
-        <button className="notification-btn">
-          <span>🔔</span>
-          <span className="notification-badge">3</span>
+        <button className="header-bell">
+          🔔
+          <span className="header-bell-badge" />
         </button>
-        <div className="user-avatar">
-          <span>ИС</span>
-        </div>
+        <div className="header-avatar">АД</div>
       </div>
     </header>
   );
-};
+}
 
 export default Header;

@@ -700,19 +700,23 @@ body::before {
 }
 
 @media (max-width: 768px) {
+  /* === Sidebar → bottom tab bar === */
   .sidebar {
     position: fixed;
     top: auto;
     bottom: 0;
     left: 0;
+    right: 0;
     width: 100% !important;
     height: 60px;
     flex-direction: row;
-    padding: 8px 12px;
+    padding: 8px 0;
     border-right: none;
     border-top: 1px solid var(--glass-border);
-    overflow-x: auto;
+    overflow-x: hidden;
     z-index: 100;
+    justify-content: space-around;
+    backdrop-filter: blur(10px);
   }
 
   .sidebar-logo,
@@ -723,33 +727,85 @@ body::before {
 
   .sidebar-nav {
     flex-direction: row;
-    gap: 8px;
+    gap: 0;
     align-items: center;
-    justify-content: center;
+    justify-content: space-around;
     width: 100%;
   }
 
   .sidebar-item {
     padding: 8px 12px;
     justify-content: center;
+    flex: 1;
   }
 
+  .sidebar-item-icon {
+    font-size: 20px;
+  }
+
+  /* === Main content offset === */
   .main-wrapper,
   .main-wrapper.collapsed {
     margin-left: 0;
-    margin-bottom: 60px;
-  }
-
-  .stats-grid {
-    grid-template-columns: 1fr;
+    padding-bottom: 70px;
   }
 
   .main-content {
     padding: 16px;
+    padding-bottom: 80px;
   }
 
-  .header-search input {
-    width: 160px;
+  /* === Header mobile === */
+  .header {
+    padding: 0 12px;
+    backdrop-filter: blur(10px);
+  }
+
+  .header-search {
+    display: none;
+  }
+
+  .header-title {
+    font-size: 16px;
+  }
+
+  /* === Stats grid: 2 columns === */
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .stat-card-value {
+    font-size: 20px;
+  }
+
+  /* === Glassmorphism performance === */
+  .glass-card {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 16px;
+    border-radius: 12px;
+  }
+
+  .header {
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  /* === Recharts font-size === */
+  .recharts-text {
+    font-size: 10px !important;
+  }
+
+  /* === Tables: horizontal scroll + card-like rows === */
+  .table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: 10px 12px;
+    font-size: 12px;
   }
 
   .transactions-header {
@@ -759,6 +815,108 @@ body::before {
 
   .transactions-search {
     width: 100%;
+  }
+
+  /* === Dropdowns: fullscreen overlay === */
+  .dropdown {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 60px;
+    width: 100%;
+    max-height: none;
+    border-radius: 0;
+    z-index: 200;
+    overflow-y: auto;
+  }
+
+  .notifications-dropdown {
+    width: 100%;
+    max-height: none;
+  }
+
+  .profile-dropdown {
+    width: 100%;
+  }
+
+  /* === Products grid === */
+  .products-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  /* === Analytics grid === */
+  .analytics-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  /* === Charts grid === */
+  .charts-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  /* === Bottom grid === */
+  .bottom-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  /* === Settings === */
+  .settings-list {
+    max-width: 100%;
+  }
+
+  .settings-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  /* === Period filter === */
+  .period-filter {
+    gap: 6px;
+  }
+
+  .period-btn {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  /* === Pagination === */
+  .pagination {
+    flex-wrap: wrap;
+  }
+
+  .pagination-btn {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stat-card-value {
+    font-size: 18px;
+  }
+
+  .main-content {
+    padding: 12px;
+    padding-bottom: 80px;
+  }
+
+  .header-title {
+    font-size: 14px;
+  }
+
+  .page-title {
+    font-size: 18px;
   }
 }
 

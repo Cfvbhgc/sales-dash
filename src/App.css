@@ -935,8 +935,20 @@ body::before {
 
   /* Tables: horizontal scroll */
   .table-wrapper {
+    position: relative;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+  }
+  .table-wrapper::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 30px;
+    background: linear-gradient(90deg, transparent, rgba(10,14,39,0.8));
+    pointer-events: none;
+    z-index: 1;
   }
 
   .data-table th,

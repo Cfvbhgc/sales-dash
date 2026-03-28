@@ -1,34 +1,42 @@
-# SalesDash
+# SalesDash — Дашборд аналитики продаж
 
-Dark-themed sales analytics dashboard built with React, TypeScript, Recharts, and Framer Motion.
+Тёмный glassmorphism-дашборд аналитики продаж на React + TypeScript.
 
-## Features
+## Возможности
 
-- Real-time animated stats cards with counter roll-up effects
-- Revenue area chart with gradient fill and custom tooltips
-- Sales by category donut chart
-- Sortable and searchable transactions table with CSV export
-- Top managers progress cards
-- Collapsible sidebar with mobile bottom navigation
-- Glassmorphism card design with dark color palette
-- Stats auto-update every 8-10 seconds
+- Карточки метрик с counter-анимацией (выручка, заказы, клиенты, средний чек)
+- График выручки за 12 месяцев (Recharts AreaChart с градиентной заливкой)
+- Круговая диаграмма продаж по категориям
+- Таблица транзакций с сортировкой, поиском, пагинацией и экспортом CSV
+- Топ менеджеров с прогресс-барами
+- Страницы: Продажи, Клиенты, Продукты, Аналитика, Настройки
+- Дропдауны уведомлений и профиля
+- Автообновление метрик каждые 8 секунд
+- Фильтр периода (7 дней / 30 дней / 90 дней / год)
+- Сворачиваемый sidebar, bottom tab bar на мобиле
 
-## Tech Stack
+## Технологии
 
 - React 19 + TypeScript
-- Recharts (charts and data visualization)
-- Framer Motion (animations)
-- date-fns (date formatting)
-- CSS with glassmorphism effects
+- Recharts — графики и визуализация данных
+- Framer Motion — анимации
+- date-fns — форматирование дат
+- CSS — glassmorphism, backdrop-filter, адаптивная вёрстка
 
-## Getting Started
+## Дизайн
+
+- Градиент фона: `#0a0e27` → `#000000` + noise-текстура
+- Акценты: emerald `#10b981`, purple `#8b5cf6`, amber `#f59e0b`
+- Шрифты: Plus Jakarta Sans + JetBrains Mono (цифры)
+
+## Запуск
 
 ```bash
 npm install
 npm start
 ```
 
-## Build
+## Сборка
 
 ```bash
 npm run build

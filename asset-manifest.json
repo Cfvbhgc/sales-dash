@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/sales-dash/static/css/main.addbeeec.css",
+    "main.js": "/sales-dash/static/js/main.219b09be.js",
+    "index.html": "/sales-dash/index.html",
+    "main.addbeeec.css.map": "/sales-dash/static/css/main.addbeeec.css.map",
+    "main.219b09be.js.map": "/sales-dash/static/js/main.219b09be.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.addbeeec.css",
+    "static/js/main.219b09be.js"
+  ]
+}

@@ -242,7 +242,7 @@ export function CommandPalette({ open, onClose, go, openClient }: { open: boolea
   const [q, setQ] = useState('');
   const [sel, setSel] = useState(0);
   const input = useRef<HTMLInputElement>(null);
-  useEffect(() => { if (open) { setQ(''); setSel(0); setTimeout(() => input.current?.focus(), 10); } }, [open]);
+  useEffect(() => { if (open) { setQ(''); setSel(0); } }, [open]);
   const hits = useMemo<Hit[]>(() => {
     const s = q.trim().toLowerCase();
     const pages: Hit[] = NAV.map((n) => ({ kind: 'page', id: n.id, title: t[n.id], sub: t.goTo, run: () => go(n.id) }));
@@ -266,7 +266,7 @@ export function CommandPalette({ open, onClose, go, openClient }: { open: boolea
       <div className="cmd-overlay" onClick={onClose} />
       <div className="cmd">
         <label className="cmd-field"><MagnifyingGlass size={20} aria-hidden="true" />
-          <input ref={input} value={q} onChange={(e) => { setQ(e.target.value); setSel(0); }} placeholder={t.searchHint} aria-label={t.search} />
+          <input ref={input} autoFocus value={q} onChange={(e) => { setQ(e.target.value); setSel(0); }} placeholder={t.searchHint} aria-label={t.search} />
           <kbd>Esc</kbd>
         </label>
         <ul className="cmd-list" role="listbox">
